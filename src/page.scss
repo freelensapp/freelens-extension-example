@@ -1,0 +1,6 @@
+.example-page {
+  display: flex;
+  justify-content: center; // Centers horizontally
+  align-items: center;    // Centers vertically
+  height: 100vh;          // Ensures it takes the full viewport height
+}

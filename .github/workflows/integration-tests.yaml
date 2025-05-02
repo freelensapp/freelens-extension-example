@@ -1,0 +1,141 @@
+name: Integration tests
+
+on:
+  push:
+    branches-ignore:
+      - automated/*
+      - renovate/*
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+env:
+  minikube_version: 1.35.0 # datasource=github-releases depName=kubernetes/minikube
+
+jobs:
+  test-integration:
+    name: integration tests on ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            arch: x64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout plugin
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Get pnpm cache directory
+        shell: bash
+        run: echo "pnpm_cache_dir=$(pnpm store path)" >> ${GITHUB_ENV}
+
+      - name: Use pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.pnpm_cache_dir }}
+          key: ${{ matrix.os }}-${{ matrix.arch }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ matrix.os }}-${{ matrix.arch }}-node-
+
+      - name: Install pnpm dependencies for extension
+        id: install-pnpm-extension
+        shell: bash
+        run: timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
+        continue-on-error: true
+
+      - name: Install pnpm dependencies for extension (retry)
+        if: steps.install-pnpm-extension.outcome == 'failure'
+        shell: bash
+        run: timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
+
+      - name: Get Freelens version
+        shell: bash
+        run: echo "freelens_version=$(npm list @freelensapp/extensions --json | jq -r '.dependencies["@freelensapp/extensions"].version')"
+          >> ${GITHUB_ENV}
+
+      - name: Build plugin
+        run: pnpm build
+
+      - name: Pack plugin
+        run: pnpm pack
+
+      - name: Get extension path
+        shell: bash
+        run: echo "EXTENSION_PATH=$(find $(pwd) -name '*.tgz')" >> ${GITHUB_ENV}
+
+      - name: Checkout app
+        uses: actions/checkout@v4
+        with:
+          repository: freelensapp/freelens
+          ref: v${{ env.freelens_version }}
+          path: freelens
+
+      - name: Move app to upper directory
+        shell: bash
+        run: mv freelens ..
+
+      - name: Install pnpm dependencies for app
+        id: install-pnpm-app
+        shell: bash
+        run: cd ../freelens && timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
+        continue-on-error: true
+
+      - name: Install pnpm dependencies for app (retry)
+        if: steps.install-pnpm-app.outcome == 'failure'
+        shell: bash
+        run: cd ../freelens && timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
+
+      - name: Build app
+        run: cd ../freelens && npm run build
+
+      - name: Copy tests from plugin to app
+        run: |
+          rm -f ../freelens/freelens/integration/__tests__/*
+          cp integration/__tests__/* ../freelens/freelens/integration/__tests__
+
+      - name: Get Kubernetes version (Linux)
+        if: runner.os == 'Linux'
+        run: echo "kubernetes_version=$(yq -r .config.bundledKubectlVersion ../freelens/freelens/package.json)" >> $GITHUB_ENV
+
+      - name: Install minikube (Linux)
+        if: runner.os == 'Linux'
+        uses: manusa/actions-setup-minikube@v2.13.1
+        with:
+          minikube version: v${{ env.minikube_version }}
+          kubernetes version: v${{ env.kubernetes_version }}
+          github token: ${{ secrets.GITHUB_TOKEN }}
+          driver: docker
+
+      - name: Build Electron app
+        run: cd ../freelens && npm run build:app -- -- -- dir --${{ matrix.arch }}
+
+      - name: Run integration tests (Linux)
+        if: runner.os == 'Linux'
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          retry_on: timeout
+          command: |
+            cd ../freelens
+            sudo chown root:root freelens/dist/linux-unpacked/chrome-sandbox
+            sudo chmod 4755 freelens/dist/linux-unpacked/chrome-sandbox
+            xvfb-run -a npm run test:integration
+        env:
+          DEBUG: pw:browser

@@ -1,0 +1,68 @@
+{
+  "name": "@freelensapp/extension-example",
+  "version": "1.0.0",
+  "description": "Example of a Freelens extension",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/freelensapp/freelens-extension-example.git",
+    "directory": "."
+  },
+  "main": "dist/main.js",
+  "renderer": "dist/renderer.js",
+  "engines": {
+    "node": ">= 22.14.0",
+    "freelens": "^1.2.2"
+  },
+  "copyright": "© 2025 Freelens Authors",
+  "license": "MIT",
+  "author": {
+    "name": "Freelens Authors",
+    "email": "freelens@freelens.app"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "biome": "pnpm dlx @biomejs/biome@1.9.4",
+    "biome:check": "pnpm biome check",
+    "biome:fix": "pnpm biome check --fix",
+    "build": "pnpm dlx cross-env@7.0.3 NODE_ENV=production webpack --progress",
+    "bump-version": "pnpm version --no-commit-hooks --no-git-tag-version --workspaces --no-workspaces-update",
+    "clean": "pnpm dlx rimraf@6.0.1 binaries dist static/build",
+    "clean:node_modules": "pnpm dlx rimraf@6.0.1 node_modules",
+    "knip": "pnpm dlx knip@5.51.0 --dependencies",
+    "knip:development": "pnpm knip",
+    "knip:production": "pnpm knip --production --strict",
+    "lint": "pnpm biome:check",
+    "lint:fix": "pnpm biome:fix"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "dependencies": {
+    "@freelensapp/extensions": "^1.2.1",
+    "react": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.24",
+    "@types/react": "19.0.11",
+    "css-loader": "^7.1.2",
+    "raw-loader": "^4.0.2",
+    "sass": "^1.87.0",
+    "sass-loader": "^16.0.5",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.2",
+    "typescript": "5.8.2",
+    "webpack": "^5.99.7",
+    "webpack-cli": "^6.0.1"
+  },
+  "keywords": [
+    "extension",
+    "freelensapp",
+    "lens",
+    "openlens",
+    "freelens"
+  ],
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
+}
