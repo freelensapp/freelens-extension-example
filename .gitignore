@@ -6,6 +6,8 @@
 *.out
 *.tgz
 
+!custom.d.ts
+
 /dist/
 
 /coverage/
