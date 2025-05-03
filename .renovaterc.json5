@@ -13,10 +13,18 @@
   ],
   // always bump depdenencies even when are in the range
   "rangeStrategy": "bump",
+  "vulnerabilityAlerts": {
+    "labels": [
+      "security"
+    ],
+    "rangeStrategy": "bump",
+  },
+  // disable autorebasing to save unecessary workflow runs
+  "rebaseWhen": "conflicted",
   "ignoreDeps": [
     // it must be the same as bundled in Electron
     "node",
-    // it must be the oldest possible version to get binary compatibility with older OSes 
+    // it must be the oldest possible version to get binary compatibility with older OSes
     "ubuntu"
   ],
   "packageRules": [
@@ -45,7 +53,7 @@
     // additional engine field in package.json
     {
       "customType": "regex",
-      "extractVersionTemplate": "^(^??<version>.*)$",
+      "extractVersionTemplate": "^(?<version>.*)$",
       "fileMatch": [
         "^package\\.json$"
       ],
@@ -54,6 +62,19 @@
       ],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "freelensapp/freelens",
+      "versioningTemplate": "npm"
+    },
+    // pnpm dlx
+    {
+      "customType": "regex",
+      "extractVersionTemplate": "^(?<version>.*)$",
+      "fileMatch": [
+        "package\\.json$"
+      ],
+      "matchStrings": [
+        "pnpm\\s+dlx\\s+(?<depName>\\S+)@(?<currentValue>\\S+?)[\\s\"|<>]"
+      ],
+      "datasourceTemplate": "npm",
       "versioningTemplate": "npm"
     },
     // renovate hints after comment
