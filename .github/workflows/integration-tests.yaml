@@ -28,6 +28,12 @@ jobs:
             arch: x64
 
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+
+    env:
+      ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
+      ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
+      PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.cache/playwright
 
     steps:
       - name: Checkout plugin
@@ -40,6 +46,10 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+
+      - name: Disable pre post scripts for pnpm
+        shell: bash
+        run: pnpm config set enablePrePostScripts false
 
       - name: Get pnpm cache directory
         shell: bash
@@ -66,7 +76,7 @@ jobs:
 
       - name: Get Freelens version
         shell: bash
-        run: echo "freelens_version=$(npm list @freelensapp/extensions --json | jq -r '.dependencies["@freelensapp/extensions"].version')"
+        run: echo "freelens_version=$(pnpm list @freelensapp/extensions --json | jq -r '.[0].dependencies["@freelensapp/extensions"].version')"
           >> ${GITHUB_ENV}
 
       - name: Build plugin
@@ -90,31 +100,81 @@ jobs:
         shell: bash
         run: mv freelens ..
 
+      - name: Get Electron version
+        shell: bash
+        run: echo "electron_version=$(yq -r .importers.freelens.devDependencies.electron.version ../freelens/pnpm-lock.yaml
+          | sed 's/(.*)//')" >> $GITHUB_ENV
+
+      - name: Get Electron Builder version
+        shell: bash
+        run: echo "electron_builder_version=$(yq -r .importers.freelens.devDependencies.electron-builder.version ../freelens/pnpm-lock.yaml
+          | sed 's/(.*)//')" >> $GITHUB_ENV
+
+      - name: Get Playwright version
+        shell: bash
+        run: echo "playwright_version=$(yq -r .importers.freelens.devDependencies.playwright.version ../freelens/pnpm-lock.yaml
+          | sed 's/(.*)//')" >> $GITHUB_ENV
+
+      - name: Use Electron cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.ELECTRON_CACHE }}
+          key: ${{ matrix.os }}-${{ matrix.arch }}-electron-${{ env.electron_version }}
+          restore-keys: |
+            ${{ matrix.os }}-${{ matrix.arch }}-electron-
+
+      - name: Use Electron Builder cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.ELECTRON_BUILDER_CACHE }}
+          key: ${{ matrix.os }}-${{ matrix.arch }}-electron-builder-${{ env.electron_builder_version }}
+          restore-keys: |
+            ${{ matrix.os }}-${{ matrix.arch }}-electron-builder-
+
+      - name: Use Playwright cache
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          key: ${{ matrix.os }}-${{ matrix.arch }}-playwright-${{ env.playwright_version }}
+          restore-keys: |
+            ${{ matrix.os }}-${{ matrix.arch }}-playwright-
+
       - name: Install pnpm dependencies for app
         id: install-pnpm-app
         shell: bash
         run: cd ../freelens && timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
         continue-on-error: true
 
       - name: Install pnpm dependencies for app (retry)
         if: steps.install-pnpm-app.outcome == 'failure'
         shell: bash
         run: cd ../freelens && timeout 300 pnpm install --color=always --prefer-offline --frozen-lockfile
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+
+      - name: Install Playwright with dependencies
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: cd ../freelens && pnpx playwright install --with-deps
+
+      - name: Install Playwright's dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: cd ../freelens && pnpx playwright install-deps
 
       - name: Build app
-        run: cd ../freelens && npm run build
+        run: cd ../freelens && pnpm --color=always --stream build
 
       - name: Copy tests from plugin to app
         run: |
           rm -f ../freelens/freelens/integration/__tests__/*
           cp integration/__tests__/* ../freelens/freelens/integration/__tests__
 
-      - name: Get Kubernetes version (Linux)
-        if: runner.os == 'Linux'
+      - name: Get Kubernetes version
         run: echo "kubernetes_version=$(yq -r .config.bundledKubectlVersion ../freelens/freelens/package.json)" >> $GITHUB_ENV
 
-      - name: Install minikube (Linux)
-        if: runner.os == 'Linux'
+      - name: Install minikube
         uses: manusa/actions-setup-minikube@v2.14.0
         with:
           minikube version: v${{ env.minikube_version }}
@@ -122,20 +182,41 @@ jobs:
           github token: ${{ secrets.GITHUB_TOKEN }}
           driver: docker
 
-      - name: Build Electron app
-        run: cd ../freelens && npm run build:app -- -- -- dir --${{ matrix.arch }}
+      - name: Build extra resources
+        id: build-resources
+        run: cd ../freelens && pnpm --color=always build:resources
+        continue-on-error: true
 
-      - name: Run integration tests (Linux)
-        if: runner.os == 'Linux'
-        uses: nick-fields/retry@v3
-        with:
-          timeout_minutes: 15
-          max_attempts: 3
-          retry_on: timeout
-          command: |
-            cd ../freelens
-            sudo chown root:root freelens/dist/linux-unpacked/chrome-sandbox
-            sudo chmod 4755 freelens/dist/linux-unpacked/chrome-sandbox
-            xvfb-run -a npm run test:integration
+      - name: Build extra resources (retry)
+        id: build-resources-2
+        if: steps.build-resources.outcome == 'failure'
+        run: cd ../freelens && pnpm --color=always build:resources
+        continue-on-error: true
+
+      - name: Build extra resources (retry 2)
+        if: steps.build-resources-2.outcome == 'failure'
+        run: cd ../freelens && pnpm --color=always build:resources
+
+      - name: Build Electron app
+        run: cd ../freelens && pnpm --color=always build:app dir --${{ matrix.arch }}
+
+      - name: Run integration tests
+        id: integration-tests-linux
+        run: |
+          cd ../freelens
+          sudo chown root:root freelens/dist/linux-unpacked/chrome-sandbox
+          sudo chmod 4755 freelens/dist/linux-unpacked/chrome-sandbox
+          timeout 600 xvfb-run -a pnpm --color=always test:integration
+        env:
+          DEBUG: pw:browser
+        continue-on-error: true
+
+      - name: Run integration tests (retry)
+        if: steps.integration-tests-linux.outcome == 'failure'
+        run: |
+          cd ../freelens
+          sudo chown root:root freelens/dist/linux-unpacked/chrome-sandbox
+          sudo chmod 4755 freelens/dist/linux-unpacked/chrome-sandbox
+          timeout 600 xvfb-run -a pnpm --color=always test:integration
         env:
           DEBUG: pw:browser
