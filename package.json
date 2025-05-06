@@ -28,7 +28,7 @@
     "biome:check": "pnpm biome check",
     "biome:fix": "pnpm biome check --fix",
     "build": "pnpm dlx cross-env@7.0.3 NODE_ENV=production webpack --progress",
-    "bump-version": "pnpm version --no-commit-hooks --no-git-tag-version --workspaces --no-workspaces-update",
+    "bump-version": "pnpm version --no-commit-hooks --no-git-tag-version",
     "clean": "pnpm dlx rimraf@6.0.1 binaries dist static/build",
     "clean:node_modules": "pnpm dlx rimraf@6.0.1 node_modules",
     "knip": "pnpm dlx knip@5.54.1 --dependencies",
