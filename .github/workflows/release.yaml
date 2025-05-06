@@ -69,47 +69,47 @@ jobs:
       - name: Pack packages
         run: pnpm --color=always --stream pack
 
-      # - name: Publish npm packages
-      #   id: publish-npm
-      #   run: |
-      #     case "${GITHUB_REF_NAME}" in
-      #       *-*) dist_tag=next;;
-      #       *) dist_tag=latest;;
-      #     esac
-      #     pnpm --color=always publish -r \
-      #       --no-git-checks \
-      #       --tag ${dist_tag}
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      #   continue-on-error: true
+      - name: Publish npm packages
+        id: publish-npm
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            *-*) dist_tag=next;;
+            *) dist_tag=latest;;
+          esac
+          pnpm --color=always publish -r \
+            --no-git-checks \
+            --tag ${dist_tag}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        continue-on-error: true
 
-      # - name: Publish npm packages (retry)
-      #   id: publish-npm-2
-      #   if: steps.publish-npm.outcome == 'failure'
-      #   run: |
-      #     case "${GITHUB_REF_NAME}" in
-      #       *-*) dist_tag=next;;
-      #       *) dist_tag=latest;;
-      #     esac
-      #     pnpm --color=always publish -r \
-      #       --no-git-checks \
-      #       --tag ${dist_tag}
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      #   continue-on-error: true
+      - name: Publish npm packages (retry)
+        id: publish-npm-2
+        if: steps.publish-npm.outcome == 'failure'
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            *-*) dist_tag=next;;
+            *) dist_tag=latest;;
+          esac
+          pnpm --color=always publish -r \
+            --no-git-checks \
+            --tag ${dist_tag}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        continue-on-error: true
 
-      # - name: Publish npm packages (retry 2)
-      #   if: steps.publish-npm-2.outcome == 'failure'
-      #   run: |
-      #     case "${GITHUB_REF_NAME}" in
-      #       *-*) dist_tag=next;;
-      #       *) dist_tag=latest;;
-      #     esac
-      #     pnpm --color=always publish -r \
-      #       --no-git-checks \
-      #       --tag ${dist_tag}
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish npm packages (retry 2)
+        if: steps.publish-npm-2.outcome == 'failure'
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            *-*) dist_tag=next;;
+            *) dist_tag=latest;;
+          esac
+          pnpm --color=always publish -r \
+            --no-git-checks \
+            --tag ${dist_tag}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create release
         uses: softprops/action-gh-release@v2
