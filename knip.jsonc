@@ -4,6 +4,8 @@
   "entry": ["dist/{main,renderer}.js!", "main.ts", "renderer.tsx"],
   "project": ["*.js", "*.ts", "*.tsx", "dist/**/*.js!", "src/**/*.tsx"],
 
+  "ignoreBinaries": ["build:.*"],
+
   "typescript": {
     "config": ["tsconfig.json"]
   },
