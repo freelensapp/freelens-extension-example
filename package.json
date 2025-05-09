@@ -41,7 +41,7 @@
     "dist/**/*"
   ],
   "dependencies": {
-    "@freelensapp/extensions": "^1.2.1",
+    "@freelensapp/extensions": "^1.3.0",
     "react": "^19.1.0"
   },
   "devDependencies": {
