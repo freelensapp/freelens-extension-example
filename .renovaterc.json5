@@ -54,8 +54,8 @@
     {
       "customType": "regex",
       "extractVersionTemplate": "^(?<version>.*)$",
-      "fileMatch": [
-        "^package\\.json$"
+      "managerFilePatterns": [
+        "/^package\\.json$/"
       ],
       "matchStrings": [
         "\"freelens\"\\s*:\\s*\"(?<currentValue>\\S+)\""
@@ -68,8 +68,8 @@
     {
       "customType": "regex",
       "extractVersionTemplate": "^(?<version>.*)$",
-      "fileMatch": [
-        "package\\.json$"
+      "managerFilePatterns": [
+        "/package\\.json$/"
       ],
       "matchStrings": [
         "pnpm\\s+dlx\\s+(?<depName>\\S+)@(?<currentValue>\\S+?)[\\s\"|<>]"
@@ -81,10 +81,10 @@
     {
       "customType": "regex",
       "extractVersionTemplate": "^v?(?<version>.*)$",
-      "fileMatch": [
-        "^\\.github/workflows/.*\\.ya?ml$",
-        "^\\.trunk/trunk.yaml",
-        "^\\.tool-versions$"
+      "managerFilePatterns": [
+        "/^\\.github/workflows/.*\\.ya?ml$/",
+        "/^\\.trunk/trunk.yaml/",
+        "/^\\.tool-versions$/"
       ],
       "matchStrings": [
         "(\\s+|.*?@)(?<currentValue>\\S+)\\s*#\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(\\s+versioning=(?<versioning>\\S+))?(\\s+registryUrl=(?<registryUrl>\\S+))?\\s*\\n"
