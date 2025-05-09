@@ -1,86 +1,95 @@
 {
-  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
-  extends: [
-    'config:recommended',
-    ':semanticCommitsDisabled',
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommitsDisabled"
   ],
-  addLabels: [
-    'renovate',
+  "addLabels": [
+    "renovate"
   ],
-  osvVulnerabilityAlerts: true,
-  postUpdateOptions: [
-    'pnpmDedupe',
+  "osvVulnerabilityAlerts": true,
+  "postUpdateOptions": [
+    "pnpmDedupe"
   ],
-  rangeStrategy: 'bump',
-  vulnerabilityAlerts: {
-    labels: [
-      'security',
+  // always bump depdenencies even when are in the range
+  "rangeStrategy": "bump",
+  "vulnerabilityAlerts": {
+    "labels": [
+      "security"
     ],
-    rangeStrategy: 'bump',
+    "rangeStrategy": "bump",
   },
-  rebaseWhen: 'conflicted',
-  ignoreDeps: [
-    'node',
-    'ubuntu',
+  // disable autorebasing to save unecessary workflow runs
+  "rebaseWhen": "conflicted",
+  "ignoreDeps": [
+    // it must be the same as bundled in Electron
+    "node",
+    // it must be the oldest possible version to get binary compatibility with older OSes
+    "ubuntu"
   ],
-  packageRules: [
+  "packageRules": [
+    // peerDependencies are widen
     {
-      matchDepTypes: [
-        'peerDependencies',
+      "matchDepTypes": [
+        "peerDependencies"
       ],
-      rangeStrategy: 'widen',
-      semanticCommitScope: 'peer-deps',
+      "rangeStrategy": "widen",
+      "semanticCommitScope": "peer-deps"
     },
+    // non-major updates only
     {
-      matchDepNames: [
-        '@types/node',
-        'electron',
-        'npm',
+      "matchDepNames": [
+        "@types/node",
+        "electron",
+        "npm"
       ],
-      matchUpdateTypes: [
-        'major',
+      "matchUpdateTypes": [
+        "major"
       ],
-      enabled: false,
-    },
+      "enabled": false
+    }
   ],
-  customManagers: [
+  "customManagers": [
+    // additional engine field in package.json
     {
-      customType: 'regex',
-      extractVersionTemplate: '^(?<version>.*)$',
-      managerFilePatterns: [
-        '/^package\\.json$/',
+      "customType": "regex",
+      "extractVersionTemplate": "^(?<version>.*)$",
+      "managerFilePatterns": [
+        "/^package\\.json$/"
       ],
-      matchStrings: [
-        '"freelens"\\s*:\\s*"(?<currentValue>\\S+)"',
+      "matchStrings": [
+        "\"freelens\"\\s*:\\s*\"(?<currentValue>\\S+)\""
       ],
-      datasourceTemplate: 'github-releases',
-      depNameTemplate: 'freelensapp/freelens',
-      versioningTemplate: 'npm',
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "freelensapp/freelens",
+      "versioningTemplate": "npm"
     },
+    // pnpm dlx
     {
-      customType: 'regex',
-      extractVersionTemplate: '^(?<version>.*)$',
-      managerFilePatterns: [
-        '/package\\.json$/',
+      "customType": "regex",
+      "extractVersionTemplate": "^(?<version>.*)$",
+      "managerFilePatterns": [
+        "/package\\.json$/"
       ],
-      matchStrings: [
-        'pnpm\\s+dlx\\s+(?<depName>\\S+)@(?<currentValue>\\S+?)[\\s"|<>]',
+      "matchStrings": [
+        "pnpm\\s+dlx\\s+(?<depName>\\S+)@(?<currentValue>\\S+?)[\\s\"|<>]"
       ],
-      datasourceTemplate: 'npm',
-      versioningTemplate: 'npm',
+      "datasourceTemplate": "npm",
+      "versioningTemplate": "npm"
     },
+    // renovate hints after comment
     {
-      customType: 'regex',
-      extractVersionTemplate: '^v?(?<version>.*)$',
-      managerFilePatterns: [
-        '/^\\.github/workflows/.*\\.ya?ml$/',
-        '/^\\.trunk/trunk.yaml/',
-        '/^\\.tool-versions$/',
+      "customType": "regex",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/.*\\.ya?ml$/",
+        "/^\\.trunk/trunk.yaml/",
+        "/^\\.tool-versions$/"
       ],
-      matchStrings: [
-        '(\\s+|.*?@)(?<currentValue>\\S+)\\s*#\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(\\s+versioning=(?<versioning>\\S+))?(\\s+registryUrl=(?<registryUrl>\\S+))?\\s*\\n',
+      "matchStrings": [
+        "(\\s+|.*?@)(?<currentValue>\\S+)\\s*#\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(\\s+versioning=(?<versioning>\\S+))?(\\s+registryUrl=(?<registryUrl>\\S+))?\\s*\\n"
       ],
-      versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}',
-    },
-  ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+    }
+  ]
 }
