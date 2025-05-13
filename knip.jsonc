@@ -5,7 +5,7 @@
   "project": ["*.{js,mjs,ts}", "out/**/*.js!", "src/**/*.{ts,tsx}"],
 
   "ignoreBinaries": ["build:.*"],
-  "ignoreDependencies": ["@freelensapp/extensions", "electron", "react"],
+  "ignoreDependencies": ["@freelensapp/extensions", "electron", "react", "@types/react"],
 
   "typescript": {
     "config": ["tsconfig.json"]
