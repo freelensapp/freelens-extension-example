@@ -4,9 +4,15 @@
  */
 
 import { Renderer } from "@freelensapp/extensions";
+
+import { FluxExtensionExamplePage } from "./page";
+
+// must be `?raw` as we need SVG element
+import svgIcon from "./icons/example.svg?raw";
+
+// transpiled .tsx code must have `React` symbol in the scope
+// @ts-ignore
 import React from "react";
-import svgIcon from "./src/icons/example.svg";
-import { FluxExtensionExamplePage } from "./src/page";
 
 const {
   Component: { Icon },
