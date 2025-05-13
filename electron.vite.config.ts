@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
-import replacePlugin from "@rollup/plugin-replace";
 import react from "@vitejs/plugin-react";
 import { defineConfig, externalizeDepsPlugin } from "electron-vite";
+import pluginExternal from "vite-plugin-external";
 
 export default defineConfig({
   // main process has full access to Node.js APIs
@@ -18,6 +18,7 @@ export default defineConfig({
           exports: "named",
           // prefer separate files for each module
           preserveModules: true,
+          preserveModulesRoot: "src/main",
         },
       },
       sourcemap: true,
@@ -27,13 +28,10 @@ export default defineConfig({
         // do not bundle modules provided by the host app
         include: ["@freelensapp/extensions"],
       }),
-      replacePlugin({
-        values: {
-          // this module is provided by the host app as a global variable
-          "require('@freelensapp/extensions')": "global.LensExtensions",
+      pluginExternal({
+        externals: {
+          "@freelensapp/extensions": "global.LensExtensions",
         },
-        preventAssignment: true,
-        delimiters: ["", ""],
       }),
     ],
   },
@@ -52,6 +50,7 @@ export default defineConfig({
           exports: "named",
           // prefer separate files for each module
           preserveModules: true,
+          preserveModulesRoot: "src/preload",
         },
       },
       sourcemap: true,
@@ -67,15 +66,12 @@ export default defineConfig({
         // bundle all other modules
         exclude: [],
       }),
-      replacePlugin({
-        values: {
-          // this module is provided by the host app as a global variable
-          "require('@freelensapp/extensions')": "global.LensExtensions",
-          // this module is provided by the host app as a global variable
-          "require('react')": "global.React",
+      pluginExternal({
+        // the modules are provided by the host app as a global variable
+        externals: {
+          "@freelensapp/extensions": "global.LensExtensions",
+          react: "global.React",
         },
-        preventAssignment: true,
-        delimiters: ["", ""],
       }),
     ],
   },
