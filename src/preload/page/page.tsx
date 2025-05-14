@@ -18,7 +18,7 @@ export class FluxExtensionExamplePage extends React.Component<{ extension: Rende
     return (
       <>
         <style>{styleInline}</style>
-        <div className={style.page}>
+        <div className={style.pageContent}>
           <h1>Example extension</h1>
         </div>
       </>
