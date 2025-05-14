@@ -8,7 +8,7 @@
     "directory": "."
   },
   "main": "out/main/index.js",
-  "renderer": "out/preload/index.js",
+  "renderer": "out/renderer/index.js",
   "files": [
     "out/**/*"
   ],
@@ -48,7 +48,6 @@
     "@types/node": "^22.15.17",
     "@types/react": "^17.0.85",
     "@vitejs/plugin-react": "^4.4.1",
-    "electron": "^35.3.0",
     "electron-vite": "^3.1.0",
     "typescript": "5.8.3",
     "vite": "^6.3.5",
