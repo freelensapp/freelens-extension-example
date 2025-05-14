@@ -40,8 +40,7 @@
     "knip:production": "pnpm knip --production --strict",
     "lint": "pnpm biome:check",
     "lint:fix": "pnpm biome:fix",
-    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
-    "typecheck": "pnpm typecheck:node"
+    "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
   },
   "devDependencies": {
     "@electron-toolkit/tsconfig": "^1.0.1",

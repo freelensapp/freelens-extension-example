@@ -1,4 +1,10 @@
 {
-  "files": [],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
+  "include": ["*.ts", "src/**/*"],
+  "compilerOptions": {
+    "composite": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "types": ["electron-vite/node"]
+  }
 }
