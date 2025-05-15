@@ -13,7 +13,8 @@
 This repository servces as an example how to build and publish extensions for
 Freelens application.
 
-Currently this is an empty package that does not provide any functionlity.
+It does not provide any useful functionality beside adding an additional menu
+entry.
 
 ## Install
 
