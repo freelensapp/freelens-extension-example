@@ -10,7 +10,7 @@
 
 <!-- markdownlint-enable MD013 -->
 
-This repository servces as an example how to build and publish extensions for
+This repository serves as an example how to build and publish extensions for
 Freelens application.
 
 It does not provide any useful functionality beside adding an additional menu
