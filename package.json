@@ -13,7 +13,7 @@
     "out/**/*"
   ],
   "engines": {
-    "node": ">= 22.14.0",
+    "node": ">= 22.15.1",
     "freelens": "^1.3.0"
   },
   "copyright": "© 2025 Freelens Authors",
