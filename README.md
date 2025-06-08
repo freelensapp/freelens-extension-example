@@ -13,8 +13,26 @@
 This repository serves as an example how to build and publish extensions for
 Freelens application.
 
-It does not provide any useful functionality beside adding an additional menu
-entry.
+## Requirements
+
+- Kubernetes >= 1.24
+- Freelens >= 1.3.2
+
+## API supported
+
+- example.freelens.app/v1alpha1
+
+To install Custom Resource Definition for this example run:
+
+```sh
+kubectl apply -f examples/crds/customresourcedefinition.yaml
+```
+
+Examples provide a resource for test:
+
+```sh
+kubectl apply -f examples/test/example.yaml
+```
 
 ## Install
 

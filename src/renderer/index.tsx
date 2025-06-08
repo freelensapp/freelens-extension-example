@@ -5,7 +5,7 @@
 
 import { Renderer } from "@freelensapp/extensions";
 
-import { FluxExtensionExamplePage } from "./page";
+import { ExamplesPage } from "./pages";
 
 // must be `?raw` as we need SVG element
 import svgIcon from "./icons/example.svg?raw";
@@ -13,21 +13,34 @@ import svgIcon from "./icons/example.svg?raw";
 // transpiled .tsx code must have `React` symbol in the scope
 // @ts-ignore
 import React from "react";
+import { ExampleDetails } from "./details/example-details";
+import { Example, exampleObject } from "./k8s/example/example";
 
 const {
   Component: { Icon },
 } = Renderer;
 
-export function FluxExtensionExampleIcon(props: Renderer.Component.IconProps) {
+export function ExampleIcon(props: Renderer.Component.IconProps) {
   return <Icon {...props} svg={svgIcon} />;
 }
 
-export default class FluxExtensionExampleRenderer extends Renderer.LensExtension {
+export default class LensExtensionExampleRenderer extends Renderer.LensExtension {
+  kubeObjectDetailItems = [
+    {
+      kind: exampleObject.kind,
+      apiVersions: exampleObject.apiVersions,
+      priority: 10,
+      components: {
+        Details: (props: Renderer.Component.KubeObjectDetailsProps<Example>) => <ExampleDetails {...props} />,
+      },
+    },
+  ];
+
   clusterPages = [
     {
-      id: "example-page",
+      id: "examples-page",
       components: {
-        Page: () => <FluxExtensionExamplePage extension={this} />,
+        Page: () => <ExamplesPage extension={this} />,
       },
     },
   ];
@@ -36,9 +49,9 @@ export default class FluxExtensionExampleRenderer extends Renderer.LensExtension
     {
       id: "example",
       title: "Example",
-      target: { pageId: "example-page" },
+      target: { pageId: "examples-page" },
       components: {
-        Icon: FluxExtensionExampleIcon,
+        Icon: ExampleIcon,
       },
     },
   ];
