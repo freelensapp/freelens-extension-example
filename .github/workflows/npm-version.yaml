@@ -6,7 +6,7 @@ on:
       newversion:
         description: New version (X.Y.Z | major | minor | patch | premajor | preminor | prepatch | prerelease)
         required: true
-        default: patch
+        default: prerelease
 
 permissions:
   contents: write
