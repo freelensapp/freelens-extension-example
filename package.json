@@ -1,10 +1,10 @@
 {
-  "name": "@freelensapp/extension-example",
+  "name": "@freelensapp/example-extension",
   "version": "1.2.1-0",
   "description": "Example of a Freelens extension",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/freelensapp/freelens-extension-example.git",
+    "url": "git+https://github.com/freelensapp/freelens-example-extension.git",
     "directory": "."
   },
   "main": "out/main/index.js",
