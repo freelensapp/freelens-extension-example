@@ -2,6 +2,8 @@ name: Release
 
 on:
   push:
+    branches:
+      - publish/v*
     tags:
       - v*
 
@@ -32,7 +34,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check if package version matches
-        run: test "${GITHUB_REF_NAME}" = "v$(jq -r .version package.json)"
+        run: test "${GITHUB_REF_NAME#publish/}" = "v$(jq -r .version package.json)"
 
       - name: Setup node
         uses: actions/setup-node@v4
@@ -75,7 +77,7 @@ jobs:
       - name: Publish npm packages
         id: publish-npm
         run: |
-          case "${GITHUB_REF_NAME}" in
+          case "${GITHUB_REF_NAME#publish/}" in
             *-*) dist_tag=next;;
             *) dist_tag=latest;;
           esac
@@ -90,7 +92,7 @@ jobs:
         id: publish-npm-2
         if: steps.publish-npm.outcome == 'failure'
         run: |
-          case "${GITHUB_REF_NAME}" in
+          case "${GITHUB_REF_NAME#publish/}" in
             *-*) dist_tag=next;;
             *) dist_tag=latest;;
           esac
@@ -104,7 +106,7 @@ jobs:
       - name: Publish npm packages (retry 2)
         if: steps.publish-npm-2.outcome == 'failure'
         run: |
-          case "${GITHUB_REF_NAME}" in
+          case "${GITHUB_REF_NAME#publish/}" in
             *-*) dist_tag=next;;
             *) dist_tag=latest;;
           esac

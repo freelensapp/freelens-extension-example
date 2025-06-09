@@ -27,6 +27,8 @@ export default defineConfig({
       externalizeDepsPlugin({
         // do not bundle modules provided by the host app
         include: ["@freelensapp/extensions"],
+        // bundle all other modules
+        exclude: ["@freelensapp/example-extension"],
       }),
       pluginExternal({
         externals: {
@@ -78,7 +80,7 @@ export default defineConfig({
           "react-router-dom",
         ],
         // bundle all other modules
-        exclude: [],
+        exclude: ["@freelensapp/example-extension"],
       }),
       pluginExternal({
         // the modules are provided by the host app as a global variable

@@ -10,6 +10,9 @@
 
 <!-- markdownlint-enable MD013 -->
 
+<!-- markdownlint-disable MD036 -->
+**Warning! This extension is renamed to @freelensapp/example-extension**
+
 This repository serves as an example how to build and publish extensions for
 Freelens application.
 
