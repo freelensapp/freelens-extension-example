@@ -1,6 +1,7 @@
 import { Renderer } from "@freelensapp/extensions";
-import { KubeObjectMetadata } from "../core/types";
 import { NamespacedObjectReference } from "./types";
+
+type KubeObjectMetadata = Renderer.K8sApi.KubeObjectMetadata;
 
 const KubeObject = Renderer.K8sApi.KubeObject;
 const KubeObjectStore = Renderer.K8sApi.KubeObjectStore;
