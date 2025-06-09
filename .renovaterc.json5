@@ -45,7 +45,8 @@
         "@types/node",
         "@types/react",
         "electron",
-        "npm"
+        "npm",
+        "react",
       ],
       "matchUpdateTypes": [
         "major"
