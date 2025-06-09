@@ -121,18 +121,3 @@ jobs:
           fail_on_unmatched_files: true
           files: |-
             *.tgz
-
-  run-workflow-npm-version:
-    name: run workflow for prelease version
-
-    needs:
-      - release
-
-    runs-on: ubuntu-24.04
-    environment: automated
-
-    steps:
-      - name: Create a new prerelease version
-        run: gh workflow run npm-version.yaml
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
