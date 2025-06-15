@@ -2,7 +2,7 @@ import { Common, Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
 import React from "react";
 import { Link } from "react-router-dom";
-import { Example, ExampleStore } from "../k8s/example/example";
+import { Example, ExampleStore } from "../k8s/example";
 
 import styleInline from "./examples-page.scss?inline";
 
