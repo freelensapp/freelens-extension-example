@@ -1,29 +1,24 @@
 import { Renderer } from "@freelensapp/extensions";
 import { observer } from "mobx-react";
-import React from "react";
 import { ExamplePreferencesStore } from "../../common/store";
 
 const {
   Component: { Checkbox },
 } = Renderer;
 
-@observer
-export class ExamplePreferenceInput extends React.Component {
-  render() {
-    return (
-      <Checkbox
-        label="Example checkbox"
-        value={ExamplePreferencesStore.getInstance().enabled}
-        onChange={(v) => {
-          ExamplePreferencesStore.getInstance().enabled = v;
-        }}
-      />
-    );
-  }
-}
+const preferences = ExamplePreferencesStore.getInstanceOrCreate();
 
-export class ExamplePreferenceHint extends React.Component {
-  render() {
-    return <span>This is an example of an preference for extensions.</span>;
-  }
-}
+export const ExamplePreferenceInput = observer(() => {
+  return (
+    <Checkbox
+      label="Example checkbox"
+      value={preferences.enabled.get()}
+      onChange={(v) => {
+        console.log(`[EXAMPLE-PREFERENCES-STORE] onChange ${v}`);
+        preferences.enabled.set(v);
+      }}
+    />
+  );
+});
+
+export const ExamplePreferenceHint = () => <span>This is an example of an preference for extensions.</span>;

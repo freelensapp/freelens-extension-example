@@ -5,6 +5,6 @@ import { ExamplePreferencesStore } from "../common/store";
 export default class ExampleMain extends Main.LensExtension {
   async onActivate() {
     registerExample();
-    await ExamplePreferencesStore.createInstance().loadExtension(this);
+    await ExamplePreferencesStore.getInstanceOrCreate().loadExtension(this);
   }
 }

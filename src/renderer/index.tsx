@@ -17,7 +17,7 @@ import { ExamplePreferenceHint, ExamplePreferenceInput } from "./preferences";
 
 export default class ExampleRenderer extends Renderer.LensExtension {
   async onActivate() {
-    await ExamplePreferencesStore.createInstance().loadExtension(this);
+    await ExamplePreferencesStore.getInstanceOrCreate().loadExtension(this);
   }
 
   appPreferences = [

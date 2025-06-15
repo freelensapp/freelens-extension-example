@@ -28,6 +28,13 @@ export default defineConfig({
         // do not bundle modules provided by the host app
         include: ["@freelensapp/extensions", "mobx"],
       }),
+      pluginExternal({
+        // the modules are provided by the host app as a global variable
+        externals: {
+          "@freelensapp/extensions": "global.LensExtensions",
+          mobx: "global.Mobx",
+        },
+      }),
     ],
   },
   // renderer process in Freelens can use Node.js modules then it is configured

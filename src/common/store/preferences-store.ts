@@ -1,12 +1,12 @@
 import { Common } from "@freelensapp/extensions";
 import { makeObservable, observable } from "mobx";
 
-export type ExamplePreferencesModel = {
+export interface ExamplePreferencesModel {
   enabled: boolean;
-};
+}
 
 export class ExamplePreferencesStore extends Common.Store.ExtensionStore<ExamplePreferencesModel> {
-  @observable enabled = false;
+  enabled = observable.box(false);
 
   constructor() {
     super({
@@ -15,16 +15,33 @@ export class ExamplePreferencesStore extends Common.Store.ExtensionStore<Example
         enabled: false,
       },
     });
+    console.log("[EXAMPLE-PREFERENCES-STORE] constructor");
     makeObservable(this);
   }
 
+  static getInstanceOrCreate() {
+    try {
+      return this.getInstance();
+    } catch (e) {
+      if (e instanceof TypeError) {
+        return this.createInstance();
+      } else {
+        throw e;
+      }
+    }
+  }
+
   fromStore({ enabled }: ExamplePreferencesModel): void {
-    this.enabled = enabled;
+    console.log(`[EXAMPLE-PREFERENCES-STORE] set ${enabled}`);
+
+    this.enabled.set(enabled);
   }
 
   toJSON(): ExamplePreferencesModel {
+    const enabled = this.enabled.get();
+    console.log(`[EXAMPLE-PREFERENCES-STORE] get ${enabled}`);
     return {
-      enabled: this.enabled,
+      enabled,
     };
   }
 }
