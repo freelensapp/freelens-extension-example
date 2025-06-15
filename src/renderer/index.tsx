@@ -8,10 +8,10 @@
 import React from "react";
 
 import { Renderer } from "@freelensapp/extensions";
-import { Example } from "../common/k8s/example/example";
 import { ExamplePreferencesStore } from "../common/store";
 import { ExampleDetails } from "./details/example-details";
 import { ExampleIcon } from "./icons";
+import { Example } from "./k8s/example/example";
 import { ExamplesPage } from "./pages";
 import { ExamplePreferenceHint, ExamplePreferenceInput } from "./preferences";
 
