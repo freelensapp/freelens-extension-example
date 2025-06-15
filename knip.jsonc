@@ -5,7 +5,12 @@
   "project": ["*.{js,mjs,ts}", "out/**/*.js!", "src/**/*.{ts,tsx}"],
 
   "ignoreBinaries": ["build:.*"],
-  "ignoreDependencies": [],
+  "ignoreDependencies": [
+    // used as vite plugin
+    "@babel/plugin-proposal-decorators",
+    // provided by the application
+    "@freelensapp/extensions"
+  ],
 
   "typescript": {
     "config": ["tsconfig.json"]

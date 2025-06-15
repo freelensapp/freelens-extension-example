@@ -26,11 +26,25 @@ export default defineConfig({
     plugins: [
       externalizeDepsPlugin({
         // do not bundle modules provided by the host app
-        include: ["@freelensapp/extensions"],
+        include: ["@freelensapp/extensions", "mobx"],
       }),
       pluginExternal({
+        // the modules are provided by the host app as a global variable
         externals: {
           "@freelensapp/extensions": "global.LensExtensions",
+          mobx: "global.Mobx",
+        },
+      }),
+      react({
+        babel: {
+          plugins: [
+            [
+              "@babel/plugin-proposal-decorators",
+              {
+                version: "2023-05",
+              },
+            ],
+          ],
         },
       }),
     ],
@@ -63,6 +77,16 @@ export default defineConfig({
     },
     plugins: [
       react({
+        babel: {
+          plugins: [
+            [
+              "@babel/plugin-proposal-decorators",
+              {
+                version: "2023-05",
+              },
+            ],
+          ],
+        },
         // do not use `react/jsx-runtime` module in transpiled code
         jsxRuntime: "classic",
       }),
