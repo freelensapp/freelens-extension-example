@@ -35,6 +35,18 @@ export default defineConfig({
           mobx: "global.Mobx",
         },
       }),
+      react({
+        babel: {
+          plugins: [
+            [
+              "@babel/plugin-proposal-decorators",
+              {
+                version: "2023-05",
+              },
+            ],
+          ],
+        },
+      }),
     ],
   },
   // renderer process in Freelens can use Node.js modules then it is configured
@@ -65,6 +77,16 @@ export default defineConfig({
     },
     plugins: [
       react({
+        babel: {
+          plugins: [
+            [
+              "@babel/plugin-proposal-decorators",
+              {
+                version: "2023-05",
+              },
+            ],
+          ],
+        },
         // do not use `react/jsx-runtime` module in transpiled code
         jsxRuntime: "classic",
       }),

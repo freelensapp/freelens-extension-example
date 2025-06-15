@@ -6,7 +6,7 @@ export interface ExamplePreferencesModel {
 }
 
 export class ExamplePreferencesStore extends Common.Store.ExtensionStore<ExamplePreferencesModel> {
-  enabled = observable.box(false);
+  @observable accessor enabled = false;
 
   constructor() {
     super({
@@ -34,11 +34,11 @@ export class ExamplePreferencesStore extends Common.Store.ExtensionStore<Example
   fromStore({ enabled }: ExamplePreferencesModel): void {
     console.log(`[EXAMPLE-PREFERENCES-STORE] set ${enabled}`);
 
-    this.enabled.set(enabled);
+    this.enabled = enabled;
   }
 
   toJSON(): ExamplePreferencesModel {
-    const enabled = this.enabled.get();
+    const enabled = this.enabled;
     console.log(`[EXAMPLE-PREFERENCES-STORE] get ${enabled}`);
     return {
       enabled,

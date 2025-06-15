@@ -12,10 +12,10 @@ export const ExamplePreferenceInput = observer(() => {
   return (
     <Checkbox
       label="Example checkbox"
-      value={preferences.enabled.get()}
+      value={preferences.enabled}
       onChange={(v) => {
         console.log(`[EXAMPLE-PREFERENCES-STORE] onChange ${v}`);
-        preferences.enabled.set(v);
+        preferences.enabled = v;
       }}
     />
   );
